@@ -1,14 +1,19 @@
 <template>
   <div id="app">
-    <Header />
+    <Header
+      :numCorrect="numCorrect"
+      :numTotal="numTotal"
+      :progress="index"
+    />
     <b-container>
       <b-row>
-        <b-col sm="6" offset="3">
+        <b-col md="6" offset-md="3">
           <QuestionBox
             v-if="questions.length"
             :currentQuestion="questions[index]"
             :index="index + 1"
             :next="next"
+            :increment="increment"
           />
         </b-col>
       </b-row>
@@ -30,16 +35,23 @@
       return {
         questions: [],
         index: 0,
+        numCorrect: 0,
+        numTotal: 0,
       }
     },
     methods: {
       next() {
-        console.log('index:', this.index++);
         this.index++
+      },
+      increment(isCorrect) {
+        if (isCorrect) {
+          this.numCorrect++;
+        }
+        this.numTotal++;
       }
     },
     mounted: function() {
-      fetch('https://opentdb.com/api.php?amount=10&category=27&type=multiple')
+      fetch('https://opentdb.com/api.php?amount=10&category=27&difficulty=easy&type=multiple')
         .then(resp => resp.json())
         .then(jsonData => {
           this.questions = jsonData.results;
@@ -53,8 +65,6 @@
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
   }
 </style>
